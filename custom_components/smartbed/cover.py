@@ -194,6 +194,7 @@ class SmartBedCover(SmartBedEntity, CoverEntity):
 
         self._is_moving = True
         self._move_direction = direction
+        self.async_write_ha_state()
 
         try:
             _LOGGER.debug(
@@ -223,6 +224,7 @@ class SmartBedCover(SmartBedEntity, CoverEntity):
         finally:
             self._is_moving = False
             self._move_direction = None
+            self.async_write_ha_state()
 
     async def _async_stop_movement(self) -> None:
         """Stop the cover movement."""
@@ -249,4 +251,5 @@ class SmartBedCover(SmartBedEntity, CoverEntity):
         finally:
             self._is_moving = False
             self._move_direction = None
+            self.async_write_ha_state()
 

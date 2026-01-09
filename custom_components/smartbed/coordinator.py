@@ -703,18 +703,18 @@ class SmartBedCoordinator:
             if self._client is not None:
                 _LOGGER.info("Disconnecting from bed at %s", self._address)
                 # Mark as intentional so _on_disconnect doesn't trigger auto-reconnect
-                # Note: _on_disconnect will clear this flag after checking it
                 self._intentional_disconnect = True
                 try:
                     await self._client.disconnect()
                     _LOGGER.debug("Successfully disconnected from %s", self._address)
                 except BleakError as err:
                     _LOGGER.debug("Error during disconnect from %s: %s", self._address, err)
-                    # Clear flag on error since _on_disconnect may not fire
-                    self._intentional_disconnect = False
                 finally:
                     self._client = None
                     self._controller = None
+                    # Clear flag after disconnect completes - _on_disconnect may or may not fire
+                    # depending on BLE backend, so we clear it here as well
+                    self._intentional_disconnect = False
 
     def _reset_disconnect_timer(self) -> None:
         """Reset the disconnect timer."""
@@ -772,6 +772,9 @@ class SmartBedCoordinator:
         self._cancel_command.set()
 
         async with self._command_lock:
+            # Cancel disconnect timer while command is in progress to prevent mid-command disconnect
+            self._cancel_disconnect_timer()
+
             # Clear cancel signal for this command
             self._cancel_command.clear()
 
@@ -809,6 +812,9 @@ class SmartBedCoordinator:
         # Acquire the command lock to wait for any in-flight GATT write to complete
         # This prevents concurrent BLE writes which cause "operation in progress" errors
         async with self._command_lock:
+            # Cancel disconnect timer while command is in progress
+            self._cancel_disconnect_timer()
+
             if not await self.async_ensure_connected():
                 _LOGGER.error("Cannot send stop: not connected to bed")
                 return
@@ -838,6 +844,9 @@ class SmartBedCoordinator:
         self._cancel_command.set()
 
         async with self._command_lock:
+            # Cancel disconnect timer while command is in progress to prevent mid-command disconnect
+            self._cancel_disconnect_timer()
+
             # Clear cancel signal for this command
             self._cancel_command.clear()
 
