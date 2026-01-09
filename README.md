@@ -16,9 +16,9 @@ A Home Assistant custom integration for controlling smart adjustable beds via Bl
 
 | Guide | Description |
 |-------|-------------|
-| **[Connection Guide](docs/CONNECTION_GUIDE.md)** | Complete setup walkthrough, ESPHome Bluetooth proxy configuration, identifying your bed type, and technical BLE protocol details |
-| **[Troubleshooting](docs/TROUBLESHOOTING.md)** | Solutions for common problems - connection failures, commands not working, position sensors issues, and how to get help |
-| **[Supported Beds](docs/SUPPORTED_BEDS.md)** | Detailed information about each supported bed brand, their features, protocol variants, and brand-specific notes |
+| **[Connection Guide](docs/CONNECTION_GUIDE.md)** | Setup walkthrough, ESPHome Bluetooth proxy configuration, finding your bed's address |
+| **[Troubleshooting](docs/TROUBLESHOOTING.md)** | Solutions for common problems - connection failures, commands not working, position sensors |
+| **[Supported Beds](docs/SUPPORTED_BEDS.md)** | Detailed info for each bed brand, protocol variants, and complete BLE command references |
 
 These guides contain much more detail than this README - **if you're stuck, they're the place to look!**
 
