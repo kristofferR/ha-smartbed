@@ -225,11 +225,12 @@ class SmartBedCoordinator:
         async with self._lock:
             return await self._async_connect_locked()
 
-    async def _async_connect_locked(self) -> bool:
+    async def _async_connect_locked(self, reset_timer: bool = True) -> bool:
         """Connect to the bed (must hold lock)."""
         if self._client is not None and self._client.is_connected:
             _LOGGER.debug("Already connected to %s, reusing connection", self._address)
-            self._reset_disconnect_timer()
+            if reset_timer:
+                self._reset_disconnect_timer()
             return True
 
         _LOGGER.info("Initiating BLE connection to %s (max %d attempts)", self._address, MAX_RETRIES)
@@ -541,7 +542,8 @@ class SmartBedCoordinator:
                 self._controller = self._create_controller()
                 _LOGGER.debug("Controller created successfully")
 
-                self._reset_disconnect_timer()
+                if reset_timer:
+                    self._reset_disconnect_timer()
 
                 # Start position notifications (no-op if angle sensing disabled)
                 await self.async_start_notify()
@@ -756,28 +758,31 @@ class SmartBedCoordinator:
         )
         await self.async_disconnect()
 
-    async def async_ensure_connected(self) -> bool:
+    async def async_ensure_connected(self, reset_timer: bool = True) -> bool:
         """Ensure we are connected to the bed."""
         async with self._lock:
             if self._client is not None and self._client.is_connected:
                 _LOGGER.debug("Connection check: already connected to %s", self._address)
-                self._reset_disconnect_timer()
+                if reset_timer:
+                    self._reset_disconnect_timer()
                 return True
             _LOGGER.debug("Connection check: reconnecting to %s", self._address)
-            return await self._async_connect_locked()
+            return await self._async_connect_locked(reset_timer=reset_timer)
 
     async def async_write_command(
         self,
         command: bytes,
         repeat_count: int = 1,
         repeat_delay_ms: int = 100,
+        cancel_running: bool = True,
     ) -> None:
         """Write a command to the bed.
 
-        New commands cancel any running command for immediate response.
+        Motor commands cancel any running command for immediate response.
         """
-        # Cancel any running command immediately
-        self._cancel_command.set()
+        if cancel_running:
+            # Cancel any running command immediately
+            self._cancel_command.set()
 
         async with self._command_lock:
             # Cancel disconnect timer while command is in progress to prevent mid-command disconnect
@@ -793,7 +798,7 @@ class SmartBedCoordinator:
                     repeat_count,
                     repeat_delay_ms,
                 )
-                if not await self.async_ensure_connected():
+                if not await self.async_ensure_connected(reset_timer=False):
                     _LOGGER.error("Cannot write command: not connected to bed")
                     raise ConnectionError("Not connected to bed")
 
@@ -809,7 +814,8 @@ class SmartBedCoordinator:
                 if not self._disable_angle_sensing and not self._cancel_command.is_set():
                     await self._async_read_positions()
             finally:
-                self._reset_disconnect_timer()
+                if self._client is not None and self._client.is_connected:
+                    self._reset_disconnect_timer()
 
     async def async_stop_command(self) -> None:
         """Immediately stop any running command and send stop to bed."""
@@ -823,34 +829,40 @@ class SmartBedCoordinator:
         async with self._command_lock:
             # Cancel disconnect timer while command is in progress
             self._cancel_disconnect_timer()
+            try:
+                if not await self.async_ensure_connected(reset_timer=False):
+                    _LOGGER.error("Cannot send stop: not connected to bed")
+                    return
 
-            if not await self.async_ensure_connected():
-                _LOGGER.error("Cannot send stop: not connected to bed")
-                return
+                if self._controller is None:
+                    _LOGGER.error("Cannot send stop: no controller available")
+                    return
 
-            if self._controller is None:
-                _LOGGER.error("Cannot send stop: no controller available")
-                return
-
-            # Send stop command with a fresh event so it's not cancelled by our own cancel signal
-            await self._controller.write_command(bytes([0x00, 0x00]), cancel_event=asyncio.Event())
-            self._reset_disconnect_timer()
-            _LOGGER.info("Stop command sent")
+                # Send stop command with a fresh event so it's not cancelled by our own cancel signal
+                await self._controller.write_command(
+                    bytes([0x00, 0x00]), cancel_event=asyncio.Event()
+                )
+                _LOGGER.info("Stop command sent")
+            finally:
+                if self._client is not None and self._client.is_connected:
+                    self._reset_disconnect_timer()
 
     async def async_execute_controller_command(
         self,
         command_fn,
+        cancel_running: bool = True,
     ) -> None:
         """Execute a controller command with proper serialization.
 
         This ensures commands are serialized through the command lock,
-        cancels any running command, and properly resets the disconnect timer.
+        optionally cancels any running command, and properly resets the disconnect timer.
 
         Args:
             command_fn: An async callable that takes the controller as argument.
         """
-        # Cancel any running command immediately
-        self._cancel_command.set()
+        if cancel_running:
+            # Cancel any running command immediately
+            self._cancel_command.set()
 
         async with self._command_lock:
             # Cancel disconnect timer while command is in progress to prevent mid-command disconnect
@@ -860,7 +872,7 @@ class SmartBedCoordinator:
                 # Clear cancel signal for this command
                 self._cancel_command.clear()
 
-                if not await self.async_ensure_connected():
+                if not await self.async_ensure_connected(reset_timer=False):
                     _LOGGER.error("Cannot execute command: not connected to bed")
                     raise ConnectionError("Not connected to bed")
 
@@ -874,7 +886,8 @@ class SmartBedCoordinator:
                 if not self._disable_angle_sensing and not self._cancel_command.is_set():
                     await self._async_read_positions()
             finally:
-                self._reset_disconnect_timer()
+                if self._client is not None and self._client.is_connected:
+                    self._reset_disconnect_timer()
 
     async def async_start_notify(self) -> None:
         """Start listening for position notifications."""
@@ -927,4 +940,3 @@ class SmartBedCoordinator:
             self._position_callbacks.discard(callback_fn)  # Safe removal, no error if missing
 
         return unregister
-

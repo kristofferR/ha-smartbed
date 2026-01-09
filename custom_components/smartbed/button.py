@@ -30,6 +30,7 @@ class SmartBedButtonEntityDescription(ButtonEntityDescription):
     requires_massage: bool = False
     entity_category: EntityCategory | None = None
     is_coordinator_action: bool = False  # If True, this is a coordinator-level action (connect/disconnect)
+    cancel_movement: bool = False  # If True, cancels any running motor command
 
 
 BUTTON_DESCRIPTIONS: tuple[SmartBedButtonEntityDescription, ...] = (
@@ -39,24 +40,28 @@ BUTTON_DESCRIPTIONS: tuple[SmartBedButtonEntityDescription, ...] = (
         translation_key="preset_memory_1",
         icon="mdi:numeric-1-box",
         press_fn=lambda ctrl: ctrl.preset_memory(1),
+        cancel_movement=True,
     ),
     SmartBedButtonEntityDescription(
         key="preset_memory_2",
         translation_key="preset_memory_2",
         icon="mdi:numeric-2-box",
         press_fn=lambda ctrl: ctrl.preset_memory(2),
+        cancel_movement=True,
     ),
     SmartBedButtonEntityDescription(
         key="preset_memory_3",
         translation_key="preset_memory_3",
         icon="mdi:numeric-3-box",
         press_fn=lambda ctrl: ctrl.preset_memory(3),
+        cancel_movement=True,
     ),
     SmartBedButtonEntityDescription(
         key="preset_memory_4",
         translation_key="preset_memory_4",
         icon="mdi:numeric-4-box",
         press_fn=lambda ctrl: ctrl.preset_memory(4),
+        cancel_movement=True,
     ),
     # Program buttons (config category)
     SmartBedButtonEntityDescription(
@@ -262,7 +267,8 @@ class SmartBedButton(SmartBedEntity, ButtonEntity):
         try:
             _LOGGER.debug("Executing button action: %s", self.entity_description.key)
             await self._coordinator.async_execute_controller_command(
-                self.entity_description.press_fn
+                self.entity_description.press_fn,
+                cancel_running=self.entity_description.cancel_movement,
             )
             _LOGGER.debug("Button action completed: %s", self.entity_description.key)
         except Exception as err:
@@ -271,4 +277,3 @@ class SmartBedButton(SmartBedEntity, ButtonEntity):
                 self.entity_description.key,
                 err,
             )
-

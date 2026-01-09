@@ -83,7 +83,8 @@ class SmartBedSwitch(SmartBedEntity, SwitchEntity):
         try:
             _LOGGER.debug("Sending turn on command for %s", self.entity_description.key)
             await self._coordinator.async_execute_controller_command(
-                self.entity_description.turn_on_fn
+                self.entity_description.turn_on_fn,
+                cancel_running=False,
             )
             self._attr_is_on = True
             self.async_write_ha_state()
@@ -111,7 +112,8 @@ class SmartBedSwitch(SmartBedEntity, SwitchEntity):
         try:
             _LOGGER.debug("Sending turn off command for %s", self.entity_description.key)
             await self._coordinator.async_execute_controller_command(
-                self.entity_description.turn_off_fn
+                self.entity_description.turn_off_fn,
+                cancel_running=False,
             )
             self._attr_is_on = False
             self.async_write_ha_state()
@@ -127,4 +129,3 @@ class SmartBedSwitch(SmartBedEntity, SwitchEntity):
                 self.entity_description.key,
                 err,
             )
-

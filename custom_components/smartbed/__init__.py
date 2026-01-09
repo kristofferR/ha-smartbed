@@ -47,6 +47,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     coordinator = SmartBedCoordinator(hass, entry)
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
     # Connect to the bed with a timeout to avoid blocking startup forever
     _LOGGER.debug("Attempting initial connection to bed (timeout: %.0fs)...", SETUP_TIMEOUT)
@@ -120,7 +121,8 @@ async def _async_register_services(hass: HomeAssistant) -> None:
             coordinator = await _get_coordinator_from_device(hass, device_id)
             if coordinator:
                 await coordinator.async_execute_controller_command(
-                    lambda ctrl: ctrl.program_memory(preset)
+                    lambda ctrl: ctrl.program_memory(preset),
+                    cancel_running=False,
                 )
 
     async def handle_stop_all(call: ServiceCall) -> None:
@@ -191,10 +193,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
+async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Handle options updates."""
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
 def _async_unregister_services(hass: HomeAssistant) -> None:
     """Unregister Smart Bed services."""
     for service in (SERVICE_GOTO_PRESET, SERVICE_SAVE_PRESET, SERVICE_STOP_ALL):
         if hass.services.has_service(DOMAIN, service):
             hass.services.async_remove(DOMAIN, service)
     _LOGGER.debug("Unregistered Smart Bed services")
-
