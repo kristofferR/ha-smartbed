@@ -187,5 +187,17 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await coordinator.async_disconnect()
         _LOGGER.info("Successfully unloaded Smart Bed integration for %s", entry.title)
 
+        # Unregister services if this was the last entry
+        if not hass.data[DOMAIN]:
+            _async_unregister_services(hass)
+
     return unload_ok
+
+
+def _async_unregister_services(hass: HomeAssistant) -> None:
+    """Unregister Smart Bed services."""
+    for service in (SERVICE_GOTO_PRESET, SERVICE_SAVE_PRESET, SERVICE_STOP_ALL):
+        if hass.services.has_service(DOMAIN, service):
+            hass.services.async_remove(DOMAIN, service)
+    _LOGGER.debug("Unregistered Smart Bed services")
 
