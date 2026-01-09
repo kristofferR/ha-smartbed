@@ -94,19 +94,19 @@ BUTTON_DESCRIPTIONS: tuple[SmartBedButtonEntityDescription, ...] = (
         icon="mdi:stop",
         press_fn=lambda ctrl: ctrl.stop_all(),
     ),
-    # Connection control buttons
+    # Connection control buttons (diagnostic)
     SmartBedButtonEntityDescription(
         key="disconnect",
         translation_key="disconnect",
         icon="mdi:bluetooth-off",
-        entity_category=EntityCategory.CONFIG,
+        entity_category=EntityCategory.DIAGNOSTIC,
         is_coordinator_action=True,
     ),
     SmartBedButtonEntityDescription(
         key="connect",
         translation_key="connect",
         icon="mdi:bluetooth-connect",
-        entity_category=EntityCategory.CONFIG,
+        entity_category=EntityCategory.DIAGNOSTIC,
         is_coordinator_action=True,
     ),
     # Massage buttons (only if has_massage)
