@@ -1,5 +1,5 @@
 [project]
-name = "smartbed-ha"
+name = "ha_smartbed"
 version = "0.1.0"
 description = "Home Assistant integration for smart beds (Linak, etc.)"
 requires-python = ">=3.11"
