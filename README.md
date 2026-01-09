@@ -27,13 +27,13 @@ These guides contain much more detail than this README - **if you're stuck, they
 | Brand | Status |
 |-------|--------|
 | **[Linak](docs/SUPPORTED_BEDS.md#linak)** | ✅ Tested |
-| **[Richmat](docs/SUPPORTED_BEDS.md#richmat)** | 🔧 Untested |
-| **[Keeson](docs/SUPPORTED_BEDS.md#keeson)** | 🔧 Untested |
-| **[Solace](docs/SUPPORTED_BEDS.md#solace)** | 🔧 Untested |
-| **[MotoSleep](docs/SUPPORTED_BEDS.md#motosleep)** | 🔧 Untested |
-| **[Leggett & Platt](docs/SUPPORTED_BEDS.md#leggett--platt)** | 🔧 Untested |
-| **[Reverie](docs/SUPPORTED_BEDS.md#reverie)** | 🔧 Untested |
-| **[Okimat](docs/SUPPORTED_BEDS.md#okimat)** | 🔧 Untested |
+| **[Richmat](docs/SUPPORTED_BEDS.md#richmat)** | ⚠️ Untested |
+| **[Keeson](docs/SUPPORTED_BEDS.md#keeson)** | ⚠️ Untested |
+| **[Solace](docs/SUPPORTED_BEDS.md#solace)** | ⚠️ Untested |
+| **[MotoSleep](docs/SUPPORTED_BEDS.md#motosleep)** | ⚠️ Untested |
+| **[Leggett & Platt](docs/SUPPORTED_BEDS.md#leggett--platt)** | ⚠️ Untested |
+| **[Reverie](docs/SUPPORTED_BEDS.md#reverie)** | ⚠️ Untested |
+| **[Okimat](docs/SUPPORTED_BEDS.md#okimat)** | ⚠️ Untested |
 
 **Not Yet Implemented:** Octo / Sleeptracker AI (cloud-based: Tempur Ergo, BeautyRest, Serta)
 
@@ -51,7 +51,7 @@ These guides contain much more detail than this README - **if you're stuck, they
 |---------|-------|---------|--------|--------|-----------|---------|---------|--------|
 | Memory Presets | 4 | 2 | 4 | 5 | 2 | 4 | 4 | 4 |
 | Program Memory | ✅ | ✅ | - | ✅ | ✅ | ✅* | ✅ | - |
-| Under-bed Lights | ✅ | ✅ | ✅ | - | ✅ | 🌈* | ✅ | ✅ |
+| Under-bed Lights | ✅ | ✅ | ✅ | - | ✅ | RGB* | ✅ | ✅ |
 | Massage Control | ✅ | ✅ | ✅ | - | ✅ | ✅* | ✅ | ✅ |
 | Position Feedback | ✅ | - | - | - | - | - | - | - |
 | Zero-G Preset | - | ✅ | ✅ | ✅ | ✅ | - | ✅ | ✅ |
