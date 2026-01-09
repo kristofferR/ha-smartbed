@@ -160,10 +160,15 @@ logger:
 
 ## Documentation
 
-- [Connection Guide](docs/CONNECTION_GUIDE.md) - Detailed setup and troubleshooting
-- [ESPHome Bluetooth Proxy Setup](docs/CONNECTION_GUIDE.md#setting-up-an-esphome-bluetooth-proxy)
-- [Identifying Your Bed](docs/CONNECTION_GUIDE.md#identifying-your-bed)
-- [Technical Protocol Details](docs/CONNECTION_GUIDE.md#technical-details)
+**Having issues? Check out the detailed guides in the `docs/` folder:**
+
+| Guide | Description |
+|-------|-------------|
+| **[Connection Guide](docs/CONNECTION_GUIDE.md)** | Complete setup walkthrough, ESPHome Bluetooth proxy configuration, identifying your bed type, and technical BLE protocol details |
+| **[Troubleshooting](docs/TROUBLESHOOTING.md)** | Solutions for common problems - connection failures, commands not working, position sensors issues, and how to get help |
+| **[Supported Beds](docs/SUPPORTED_BEDS.md)** | Detailed information about each supported bed brand, their features, protocol variants, and brand-specific notes |
+
+These guides contain much more detail than this README - **if you're stuck, they're the place to look!**
 
 ## Migration from smartbed-mqtt
 
