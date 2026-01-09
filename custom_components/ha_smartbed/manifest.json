@@ -1,5 +1,5 @@
 {
-  "domain": "smartbed",
+  "domain": "ha_smartbed",
   "name": "Smart Bed",
   "codeowners": ["@kristofferR"],
   "config_flow": true,

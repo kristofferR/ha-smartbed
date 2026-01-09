@@ -12,7 +12,17 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONF_HAS_MASSAGE, DOMAIN
+from .const import (
+    BED_TYPE_KEESON,
+    BED_TYPE_LEGGETT_PLATT,
+    BED_TYPE_MOTOSLEEP,
+    BED_TYPE_REVERIE,
+    BED_TYPE_RICHMAT,
+    BED_TYPE_SOLACE,
+    CONF_BED_TYPE,
+    CONF_HAS_MASSAGE,
+    DOMAIN,
+)
 from .coordinator import SmartBedCoordinator
 from .entity import SmartBedEntity
 
@@ -31,6 +41,7 @@ class SmartBedButtonEntityDescription(ButtonEntityDescription):
     entity_category: EntityCategory | None = None
     is_coordinator_action: bool = False  # If True, this is a coordinator-level action (connect/disconnect)
     cancel_movement: bool = False  # If True, cancels any running motor command
+    supported_bed_types: tuple[str, ...] | None = None  # If set, only create for these bed types
 
 
 BUTTON_DESCRIPTIONS: tuple[SmartBedButtonEntityDescription, ...] = (
@@ -76,6 +87,14 @@ BUTTON_DESCRIPTIONS: tuple[SmartBedButtonEntityDescription, ...] = (
         icon="mdi:rocket-launch",
         press_fn=lambda ctrl: ctrl.preset_zero_g(),
         cancel_movement=True,
+        supported_bed_types=(
+            BED_TYPE_KEESON,
+            BED_TYPE_LEGGETT_PLATT,
+            BED_TYPE_MOTOSLEEP,
+            BED_TYPE_REVERIE,
+            BED_TYPE_RICHMAT,
+            BED_TYPE_SOLACE,
+        ),
     ),
     SmartBedButtonEntityDescription(
         key="preset_anti_snore",
@@ -83,6 +102,13 @@ BUTTON_DESCRIPTIONS: tuple[SmartBedButtonEntityDescription, ...] = (
         icon="mdi:sleep-off",
         press_fn=lambda ctrl: ctrl.preset_anti_snore(),
         cancel_movement=True,
+        supported_bed_types=(
+            BED_TYPE_LEGGETT_PLATT,
+            BED_TYPE_MOTOSLEEP,
+            BED_TYPE_REVERIE,
+            BED_TYPE_RICHMAT,
+            BED_TYPE_SOLACE,
+        ),
     ),
     SmartBedButtonEntityDescription(
         key="preset_tv",
@@ -90,6 +116,11 @@ BUTTON_DESCRIPTIONS: tuple[SmartBedButtonEntityDescription, ...] = (
         icon="mdi:television",
         press_fn=lambda ctrl: ctrl.preset_tv(),
         cancel_movement=True,
+        supported_bed_types=(
+            BED_TYPE_MOTOSLEEP,
+            BED_TYPE_RICHMAT,
+            BED_TYPE_SOLACE,
+        ),
     ),
     # Program buttons (config category)
     SmartBedButtonEntityDescription(
@@ -233,10 +264,14 @@ async def async_setup_entry(
     """Set up Smart Bed button entities."""
     coordinator: SmartBedCoordinator = hass.data[DOMAIN][entry.entry_id]
     has_massage = entry.data.get(CONF_HAS_MASSAGE, False)
+    bed_type = entry.data.get(CONF_BED_TYPE)
 
     entities = []
     for description in BUTTON_DESCRIPTIONS:
         if description.requires_massage and not has_massage:
+            continue
+        # Skip buttons that aren't supported by this bed type
+        if description.supported_bed_types is not None and bed_type not in description.supported_bed_types:
             continue
         entities.append(SmartBedButton(coordinator, description))
 

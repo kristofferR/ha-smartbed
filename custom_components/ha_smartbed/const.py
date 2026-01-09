@@ -2,7 +2,7 @@
 
 from typing import Final
 
-DOMAIN: Final = "smartbed"
+DOMAIN: Final = "ha_smartbed"
 
 # Configuration keys
 CONF_BED_TYPE: Final = "bed_type"

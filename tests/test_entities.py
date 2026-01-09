@@ -8,8 +8,8 @@ import pytest
 from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
 
-from custom_components.smartbed import async_setup_entry
-from custom_components.smartbed.const import DOMAIN
+from custom_components.ha_smartbed import async_setup_entry
+from custom_components.ha_smartbed.const import DOMAIN
 
 from .conftest import TEST_ADDRESS
 

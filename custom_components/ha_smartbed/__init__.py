@@ -11,7 +11,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ADDRESS, CONF_DEVICE_ID, Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import config_validation as cv, device_registry as dr
 
 from .const import CONF_BED_TYPE, CONF_HAS_MASSAGE, CONF_MOTOR_COUNT, DOMAIN
 from .coordinator import SmartBedCoordinator
@@ -140,7 +140,7 @@ async def _async_register_services(hass: HomeAssistant) -> None:
         handle_goto_preset,
         schema=vol.Schema(
             {
-                vol.Required(CONF_DEVICE_ID): vol.All(vol.Coerce(list)),
+                vol.Required(CONF_DEVICE_ID): cv.ensure_list,
                 vol.Required(ATTR_PRESET): vol.All(
                     vol.Coerce(int), vol.Range(min=1, max=4)
                 ),
@@ -154,7 +154,7 @@ async def _async_register_services(hass: HomeAssistant) -> None:
         handle_save_preset,
         schema=vol.Schema(
             {
-                vol.Required(CONF_DEVICE_ID): vol.All(vol.Coerce(list)),
+                vol.Required(CONF_DEVICE_ID): cv.ensure_list,
                 vol.Required(ATTR_PRESET): vol.All(
                     vol.Coerce(int), vol.Range(min=1, max=4)
                 ),
@@ -168,7 +168,7 @@ async def _async_register_services(hass: HomeAssistant) -> None:
         handle_stop_all,
         schema=vol.Schema(
             {
-                vol.Required(CONF_DEVICE_ID): vol.All(vol.Coerce(list)),
+                vol.Required(CONF_DEVICE_ID): cv.ensure_list,
             }
         ),
     )

@@ -8,9 +8,9 @@ import pytest
 from bleak.exc import BleakError
 from homeassistant.core import HomeAssistant
 
-from custom_components.smartbed.beds.linak import LinakCommands, LinakController
-from custom_components.smartbed.const import LINAK_CONTROL_CHAR_UUID
-from custom_components.smartbed.coordinator import SmartBedCoordinator
+from custom_components.ha_smartbed.beds.linak import LinakCommands, LinakController
+from custom_components.ha_smartbed.const import LINAK_CONTROL_CHAR_UUID
+from custom_components.ha_smartbed.coordinator import SmartBedCoordinator
 
 
 class TestLinakCommands:

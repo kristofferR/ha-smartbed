@@ -8,8 +8,8 @@ import pytest
 from bleak.exc import BleakError
 from homeassistant.core import HomeAssistant
 
-from custom_components.smartbed.const import BED_TYPE_LINAK
-from custom_components.smartbed.coordinator import SmartBedCoordinator
+from custom_components.ha_smartbed.const import BED_TYPE_LINAK
+from custom_components.ha_smartbed.coordinator import SmartBedCoordinator
 
 from .conftest import TEST_ADDRESS, TEST_NAME
 
@@ -43,7 +43,7 @@ class TestCoordinatorInit:
         coordinator = SmartBedCoordinator(hass, mock_config_entry)
         device_info = coordinator.device_info
 
-        assert device_info["identifiers"] == {("smartbed", TEST_ADDRESS)}
+        assert device_info["identifiers"] == {("ha_smartbed", TEST_ADDRESS)}
         assert device_info["name"] == TEST_NAME
         assert device_info["manufacturer"] == "Linak"
         assert "2 motors" in device_info["model"]
@@ -74,7 +74,7 @@ class TestCoordinatorConnection:
     ):
         """Test connection fails when device not found."""
         with patch(
-            "custom_components.smartbed.coordinator.bluetooth.async_ble_device_from_address",
+            "custom_components.ha_smartbed.coordinator.bluetooth.async_ble_device_from_address",
             return_value=None,
         ):
             coordinator = SmartBedCoordinator(hass, mock_config_entry)
@@ -92,7 +92,7 @@ class TestCoordinatorConnection:
     ):
         """Test connection handles BleakError."""
         with patch(
-            "custom_components.smartbed.coordinator.establish_connection",
+            "custom_components.ha_smartbed.coordinator.establish_connection",
             new_callable=AsyncMock,
             side_effect=BleakError("Connection failed"),
         ):
@@ -259,7 +259,7 @@ class TestCoordinatorWriteCommand:
         """Test writing commands fails when not connected."""
         # Make connection fail
         with patch(
-            "custom_components.smartbed.coordinator.establish_connection",
+            "custom_components.ha_smartbed.coordinator.establish_connection",
             new_callable=AsyncMock,
             side_effect=BleakError("Connection failed"),
         ):
@@ -302,7 +302,7 @@ class TestCoordinatorNotifications:
         # Create entry with angle sensing enabled
         mock_config_entry_data["disable_angle_sensing"] = False
         entry = MockConfigEntry(
-            domain="smartbed",
+            domain="ha_smartbed",
             title=TEST_NAME,
             data=mock_config_entry_data,
             unique_id="AA:BB:CC:DD:EE:FF",
