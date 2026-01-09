@@ -4,3 +4,6 @@ smartbed-mqtt-discord-chats/
 
 # Python build artifacts
 *.egg-info/
+
+# Lock files
+uv.lock

@@ -10,23 +10,32 @@ A Home Assistant custom integration for controlling smart adjustable beds via Bl
 >
 > **Contributions are very welcome!** If you have a different bed type and can help test or improve support, please open an issue or submit a pull request. See [Contributing](#contributing) below.
 
-## Supported Beds
+## Documentation
 
-### Implemented
+**Having issues? Check out the detailed guides in the `docs/` folder:**
+
+| Guide | Description |
+|-------|-------------|
+| **[Connection Guide](docs/CONNECTION_GUIDE.md)** | Complete setup walkthrough, ESPHome Bluetooth proxy configuration, identifying your bed type, and technical BLE protocol details |
+| **[Troubleshooting](docs/TROUBLESHOOTING.md)** | Solutions for common problems - connection failures, commands not working, position sensors issues, and how to get help |
+| **[Supported Beds](docs/SUPPORTED_BEDS.md)** | Detailed information about each supported bed brand, their features, protocol variants, and brand-specific notes |
+
+These guides contain much more detail than this README - **if you're stuck, they're the place to look!**
+
+## Supported Beds
 
 | Brand | Status | Protocol | Notes |
 |-------|--------|----------|-------|
-| **Linak** | Tested | Linak BLE | Full support with position feedback |
-| **Richmat** | Implemented | Nordic / WiLinke | Two protocol variants |
-| **Keeson** | Implemented | KSBT / BaseI4/I5 | Member's Mark, Purple, ErgoMotion |
-| **Solace** | Implemented | 11-byte packets | Hospital/care beds |
-| **MotoSleep** | Implemented | HHC ASCII | Device name starts with "HHC" |
-| **Leggett & Platt** | Implemented | Gen2 ASCII / Okin | Two distinct variants |
-| **Reverie** | Implemented | XOR checksum | Position-based motor control |
-| **Okimat** | Implemented | Okin binary | Requires BLE pairing |
+| **Linak** | ✅ Tested | Linak BLE | Full support with position feedback |
+| **Richmat** | 🔧 Untested | Nordic / WiLinke | Two protocol variants |
+| **Keeson** | 🔧 Untested | KSBT / BaseI4/I5 | Member's Mark, Purple, ErgoMotion |
+| **Solace** | 🔧 Untested | 11-byte packets | Hospital/care beds |
+| **MotoSleep** | 🔧 Untested | HHC ASCII | Device name starts with "HHC" |
+| **Leggett & Platt** | 🔧 Untested | Gen2 ASCII / Okin | Two distinct variants |
+| **Reverie** | 🔧 Untested | XOR checksum | Position-based motor control |
+| **Okimat** | 🔧 Untested | Okin binary | Requires BLE pairing |
 
-### Not Yet Implemented
-- **Octo / Sleeptracker AI** - Cloud-based (Tempur Ergo, BeautyRest, Serta)
+**Not Yet Implemented:** Octo / Sleeptracker AI (cloud-based: Tempur Ergo, BeautyRest, Serta)
 
 ## Features
 
@@ -41,12 +50,12 @@ A Home Assistant custom integration for controlling smart adjustable beds via Bl
 | Feature | Linak | Richmat | Keeson | Solace | MotoSleep | Leggett | Reverie | Okimat |
 |---------|-------|---------|--------|--------|-----------|---------|---------|--------|
 | Memory Presets | 4 | 2 | 4 | 5 | 2 | 4 | 4 | 4 |
-| Program Memory | Yes | Yes | - | Yes | Yes | Yes* | Yes | - |
-| Under-bed Lights | Yes | Yes | Yes | - | Yes | RGB* | Yes | Yes |
-| Massage Control | Yes | Yes | Yes | - | Yes | Yes* | Yes | Yes |
-| Position Feedback | Yes | - | - | - | - | - | - | - |
-| Zero-G Preset | - | Yes | Yes | Yes | Yes | - | Yes | Yes |
-| Anti-Snore | - | Yes | - | Yes | Yes | Yes* | Yes | - |
+| Program Memory | ✅ | ✅ | - | ✅ | ✅ | ✅* | ✅ | - |
+| Under-bed Lights | ✅ | ✅ | ✅ | - | ✅ | 🌈* | ✅ | ✅ |
+| Massage Control | ✅ | ✅ | ✅ | - | ✅ | ✅* | ✅ | ✅ |
+| Position Feedback | ✅ | - | - | - | - | - | - | - |
+| Zero-G Preset | - | ✅ | ✅ | ✅ | ✅ | - | ✅ | ✅ |
+| Anti-Snore | - | ✅ | - | ✅ | ✅ | ✅* | ✅ | - |
 
 *Gen2 variant only
 
@@ -97,47 +106,9 @@ This integration uses Home Assistant's native Bluetooth stack, which supports:
 
 Unlike the old smartbed-mqtt addon, this integration works seamlessly with ESPHome Bluetooth proxies because it uses Home Assistant's Bluetooth stack directly. No need for dedicated proxies!
 
-## Entities
-
-### Cover Entities (Motor Control)
-
-| Entity | Description | Requirements |
-|--------|-------------|--------------|
-| `cover.<name>_back` | Back/upper body section | 2+ motors |
-| `cover.<name>_legs` | Leg section | 2+ motors |
-| `cover.<name>_head` | Head section | 3+ motors |
-| `cover.<name>_feet` | Feet section | 4 motors |
-
-### Button Entities
-
-| Entity | Description |
-|--------|-------------|
-| `button.<name>_preset_memory_1` | Go to Memory 1 position |
-| `button.<name>_preset_memory_2` | Go to Memory 2 position |
-| `button.<name>_preset_memory_3` | Go to Memory 3 position |
-| `button.<name>_preset_memory_4` | Go to Memory 4 position |
-| `button.<name>_program_memory_*` | Save current position to memory |
-| `button.<name>_stop` | Stop all motors |
-| `button.<name>_massage_*` | Massage controls (if equipped) |
-
-### Sensor Entities
-
-| Entity | Description | Requirements |
-|--------|-------------|--------------|
-| `sensor.<name>_back_angle` | Back section angle | 2+ motors |
-| `sensor.<name>_leg_angle` | Leg section angle | 2+ motors |
-| `sensor.<name>_head_angle` | Head section angle | 3+ motors |
-| `sensor.<name>_feet_angle` | Feet section angle | 4 motors |
-
-### Switch Entities
-
-| Entity | Description |
-|--------|-------------|
-| `switch.<name>_under_bed_lights` | Under-bed lighting |
-
 ## Troubleshooting
 
-For detailed troubleshooting steps, see the [Connection Guide](docs/CONNECTION_GUIDE.md).
+For detailed troubleshooting steps, see the [Troubleshooting Guide](docs/TROUBLESHOOTING.md).
 
 ### Quick Fixes
 
@@ -157,18 +128,6 @@ logger:
     custom_components.ha_smartbed: debug
     homeassistant.components.bluetooth: debug
 ```
-
-## Documentation
-
-**Having issues? Check out the detailed guides in the `docs/` folder:**
-
-| Guide | Description |
-|-------|-------------|
-| **[Connection Guide](docs/CONNECTION_GUIDE.md)** | Complete setup walkthrough, ESPHome Bluetooth proxy configuration, identifying your bed type, and technical BLE protocol details |
-| **[Troubleshooting](docs/TROUBLESHOOTING.md)** | Solutions for common problems - connection failures, commands not working, position sensors issues, and how to get help |
-| **[Supported Beds](docs/SUPPORTED_BEDS.md)** | Detailed information about each supported bed brand, their features, protocol variants, and brand-specific notes |
-
-These guides contain much more detail than this README - **if you're stuck, they're the place to look!**
 
 ## Migration from smartbed-mqtt
 
