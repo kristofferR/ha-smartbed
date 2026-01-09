@@ -816,8 +816,8 @@ class SmartBedCoordinator:
             _LOGGER.error("Cannot send stop: no controller available")
             return
 
-        # Send stop command directly (single write, no repeat)
-        await self._controller.write_command(bytes([0x00, 0x00]))
+        # Send stop command with a fresh event so it's not cancelled by our own cancel signal
+        await self._controller.write_command(bytes([0x00, 0x00]), cancel_event=asyncio.Event())
         self._reset_disconnect_timer()
         _LOGGER.info("Stop command sent")
 
