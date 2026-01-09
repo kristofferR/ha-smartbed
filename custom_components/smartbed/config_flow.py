@@ -23,7 +23,14 @@ from homeassistant.const import CONF_ADDRESS, CONF_NAME
 
 from .const import (
     ADAPTER_AUTO,
+    BED_TYPE_KEESON,
+    BED_TYPE_LEGGETT_PLATT,
     BED_TYPE_LINAK,
+    BED_TYPE_MOTOSLEEP,
+    BED_TYPE_OKIMAT,
+    BED_TYPE_REVERIE,
+    BED_TYPE_RICHMAT,
+    BED_TYPE_SOLACE,
     CONF_BED_TYPE,
     CONF_DISABLE_ANGLE_SENSING,
     CONF_HAS_MASSAGE,
@@ -33,7 +40,17 @@ from .const import (
     DEFAULT_HAS_MASSAGE,
     DEFAULT_MOTOR_COUNT,
     DOMAIN,
+    KEESON_BASE_SERVICE_UUID,
+    KEESON_KSBT_SERVICE_UUID,
+    LEGGETT_GEN2_SERVICE_UUID,
+    LEGGETT_OKIN_SERVICE_UUID,
     LINAK_CONTROL_SERVICE_UUID,
+    MOTOSLEEP_SERVICE_UUID,
+    OKIMAT_SERVICE_UUID,
+    REVERIE_SERVICE_UUID,
+    RICHMAT_NORDIC_SERVICE_UUID,
+    RICHMAT_WILINKE_SERVICE_UUIDS,
+    SOLACE_SERVICE_UUID,
     SUPPORTED_BED_TYPES,
 )
 
@@ -110,6 +127,7 @@ def get_available_adapters(hass) -> dict[str, str]:
 def detect_bed_type(service_info: BluetoothServiceInfoBleak) -> str | None:
     """Detect bed type from service info."""
     service_uuids = [str(uuid).lower() for uuid in service_info.service_uuids]
+    device_name = (service_info.name or "").lower()
 
     _LOGGER.debug(
         "Detecting bed type for device %s (name: %s)",
@@ -119,15 +137,92 @@ def detect_bed_type(service_info: BluetoothServiceInfoBleak) -> str | None:
     _LOGGER.debug("  Service UUIDs: %s", service_uuids)
     _LOGGER.debug("  Manufacturer data: %s", service_info.manufacturer_data)
 
-    # Check for Linak
+    # Check for Linak - most specific first
     if LINAK_CONTROL_SERVICE_UUID.lower() in service_uuids:
         _LOGGER.info(
-            "Detected Linak bed at %s (name: %s) - found service UUID %s",
+            "Detected Linak bed at %s (name: %s)",
             service_info.address,
             service_info.name,
-            LINAK_CONTROL_SERVICE_UUID,
         )
         return BED_TYPE_LINAK
+
+    # Check for Leggett & Platt Gen2 (must check before generic UUIDs)
+    if LEGGETT_GEN2_SERVICE_UUID.lower() in service_uuids:
+        _LOGGER.info(
+            "Detected Leggett & Platt Gen2 bed at %s (name: %s)",
+            service_info.address,
+            service_info.name,
+        )
+        return BED_TYPE_LEGGETT_PLATT
+
+    # Check for Reverie
+    if REVERIE_SERVICE_UUID.lower() in service_uuids:
+        _LOGGER.info(
+            "Detected Reverie bed at %s (name: %s)",
+            service_info.address,
+            service_info.name,
+        )
+        return BED_TYPE_REVERIE
+
+    # Check for Okimat/Leggett Okin (same UUID, requires pairing)
+    if OKIMAT_SERVICE_UUID.lower() in service_uuids:
+        # Could be Okimat or Leggett Okin - default to Okimat
+        _LOGGER.info(
+            "Detected Okimat/Okin bed at %s (name: %s)",
+            service_info.address,
+            service_info.name,
+        )
+        return BED_TYPE_OKIMAT
+
+    # Check for Richmat WiLinke variants
+    for wilinke_uuid in RICHMAT_WILINKE_SERVICE_UUIDS:
+        if wilinke_uuid.lower() in service_uuids:
+            _LOGGER.info(
+                "Detected Richmat WiLinke bed at %s (name: %s)",
+                service_info.address,
+                service_info.name,
+            )
+            return BED_TYPE_RICHMAT
+
+    # Check for MotoSleep - name-based detection (HHC prefix)
+    if device_name.startswith("hhc"):
+        _LOGGER.info(
+            "Detected MotoSleep bed at %s (name: %s)",
+            service_info.address,
+            service_info.name,
+        )
+        return BED_TYPE_MOTOSLEEP
+
+    # Check for Keeson BaseI4/I5 (must check before generic UUIDs)
+    if KEESON_BASE_SERVICE_UUID.lower() in service_uuids:
+        _LOGGER.info(
+            "Detected Keeson Base bed at %s (name: %s)",
+            service_info.address,
+            service_info.name,
+        )
+        return BED_TYPE_KEESON
+
+    # Check for Solace/MotoSleep (same UUID, different protocols)
+    # Solace uses 11-byte commands, MotoSleep uses 2-byte ASCII
+    if SOLACE_SERVICE_UUID.lower() in service_uuids:
+        # If name doesn't start with HHC, assume Solace
+        _LOGGER.info(
+            "Detected Solace bed at %s (name: %s)",
+            service_info.address,
+            service_info.name,
+        )
+        return BED_TYPE_SOLACE
+
+    # Check for Richmat Nordic / Keeson KSBT (same UUID)
+    # These share the Nordic UART service UUID
+    if RICHMAT_NORDIC_SERVICE_UUID.lower() in service_uuids:
+        # Default to Richmat, user can change in config
+        _LOGGER.info(
+            "Detected Richmat/Keeson bed at %s (name: %s)",
+            service_info.address,
+            service_info.name,
+        )
+        return BED_TYPE_RICHMAT
 
     _LOGGER.debug("Device %s does not match any known bed types", service_info.address)
     return None

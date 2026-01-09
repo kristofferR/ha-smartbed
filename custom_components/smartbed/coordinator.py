@@ -26,7 +26,14 @@ except ImportError:
 
 from .const import (
     ADAPTER_AUTO,
+    BED_TYPE_KEESON,
+    BED_TYPE_LEGGETT_PLATT,
     BED_TYPE_LINAK,
+    BED_TYPE_MOTOSLEEP,
+    BED_TYPE_OKIMAT,
+    BED_TYPE_REVERIE,
+    BED_TYPE_RICHMAT,
+    BED_TYPE_SOLACE,
     CONF_BED_TYPE,
     CONF_DISABLE_ANGLE_SENSING,
     CONF_HAS_MASSAGE,
@@ -212,6 +219,13 @@ class SmartBedCoordinator:
         """Get manufacturer name based on bed type."""
         manufacturers = {
             BED_TYPE_LINAK: "Linak",
+            BED_TYPE_RICHMAT: "Richmat",
+            BED_TYPE_KEESON: "Keeson",
+            BED_TYPE_SOLACE: "Solace",
+            BED_TYPE_MOTOSLEEP: "MotoSleep",
+            BED_TYPE_LEGGETT_PLATT: "Leggett & Platt",
+            BED_TYPE_REVERIE: "Reverie",
+            BED_TYPE_OKIMAT: "Okimat",
         }
         return manufacturers.get(self._bed_type, "Unknown")
 
@@ -670,6 +684,46 @@ class SmartBedCoordinator:
             from .beds.linak import LinakController
 
             return LinakController(self)
+
+        if self._bed_type == BED_TYPE_RICHMAT:
+            from .beds.richmat import RichmatController, detect_richmat_variant
+
+            # Detect variant based on available services
+            # For now, default to Nordic variant
+            # TODO: async detection during connection
+            return RichmatController(self, is_wilinke=False)
+
+        if self._bed_type == BED_TYPE_KEESON:
+            from .beds.keeson import KeesonController
+
+            # Default to base variant (BaseI4/I5 is more common)
+            return KeesonController(self, variant="base")
+
+        if self._bed_type == BED_TYPE_SOLACE:
+            from .beds.solace import SolaceController
+
+            return SolaceController(self)
+
+        if self._bed_type == BED_TYPE_MOTOSLEEP:
+            from .beds.motosleep import MotoSleepController
+
+            return MotoSleepController(self)
+
+        if self._bed_type == BED_TYPE_LEGGETT_PLATT:
+            from .beds.leggett_platt import LeggettPlattController
+
+            # Default to Gen2 variant (more common)
+            return LeggettPlattController(self, variant="gen2")
+
+        if self._bed_type == BED_TYPE_REVERIE:
+            from .beds.reverie import ReverieController
+
+            return ReverieController(self)
+
+        if self._bed_type == BED_TYPE_OKIMAT:
+            from .beds.okimat import OkimatController
+
+            return OkimatController(self)
 
         raise ValueError(f"Unknown bed type: {self._bed_type}")
 

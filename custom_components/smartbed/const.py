@@ -27,14 +27,14 @@ BED_TYPE_OCTO: Final = "octo"
 
 SUPPORTED_BED_TYPES: Final = [
     BED_TYPE_LINAK,
-    # BED_TYPE_RICHMAT,  # TODO: implement
-    # BED_TYPE_SOLACE,  # TODO: implement
-    # BED_TYPE_MOTOSLEEP,  # TODO: implement
-    # BED_TYPE_REVERIE,  # TODO: implement
-    # BED_TYPE_LEGGETT_PLATT,  # TODO: implement
-    # BED_TYPE_OKIMAT,  # TODO: implement
-    # BED_TYPE_KEESON,  # TODO: implement
-    # BED_TYPE_OCTO,  # TODO: implement
+    BED_TYPE_RICHMAT,
+    BED_TYPE_SOLACE,
+    BED_TYPE_MOTOSLEEP,
+    BED_TYPE_REVERIE,
+    BED_TYPE_LEGGETT_PLATT,
+    BED_TYPE_OKIMAT,
+    BED_TYPE_KEESON,
+    # BED_TYPE_OCTO,  # TODO: implement - cloud-based (Tempur Ergo, BeautyRest, Serta)
 ]
 
 # Linak specific UUIDs
@@ -56,6 +56,63 @@ LINAK_HEAD_MAX_POSITION: Final = 820
 LINAK_HEAD_MAX_ANGLE: Final = 68
 LINAK_FEET_MAX_POSITION: Final = 548
 LINAK_FEET_MAX_ANGLE: Final = 45
+
+# Richmat specific UUIDs
+# Nordic variant (simple single-byte commands)
+RICHMAT_NORDIC_SERVICE_UUID: Final = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+RICHMAT_NORDIC_CHAR_UUID: Final = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+
+# WiLinke variants (5-byte commands with checksum)
+RICHMAT_WILINKE_SERVICE_UUIDS: Final = [
+    "8ebd4f76-da9d-4b5a-a96e-8ebfbeb622e7",
+    "0000fee9-0000-1000-8000-00805f9b34fb",
+    "0000fee9-0000-1000-8000-00805f9b34bb",
+    "0000fff0-0000-1000-8000-00805f9b34fb",
+]
+RICHMAT_WILINKE_CHAR_UUIDS: Final = [
+    ("d44bc439-abfd-45a2-b575-925416129600", "d44bc439-abfd-45a2-b575-925416129601"),
+    ("d44bc439-abfd-45a2-b575-925416129600", "d44bc439-abfd-45a2-b575-925416129601"),
+    ("d44bc439-abfd-45a2-b575-925416129622", "d44bc439-abfd-45a2-b575-925416129611"),
+    ("0000fff2-0000-1000-8000-00805f9b34fb", "0000fff1-0000-1000-8000-00805f9b34fb"),
+]
+
+# Keeson specific UUIDs
+# KSBT variant
+KEESON_KSBT_SERVICE_UUID: Final = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+KEESON_KSBT_CHAR_UUID: Final = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+
+# BaseI4/BaseI5 variant
+KEESON_BASE_SERVICE_UUID: Final = "0000ffe5-0000-1000-8000-00805f9b34fb"
+KEESON_BASE_WRITE_CHAR_UUID: Final = "0000ffe9-0000-1000-8000-00805f9b34fb"
+KEESON_BASE_NOTIFY_SERVICE_UUID: Final = "0000ffe0-0000-1000-8000-00805f9b34fb"
+KEESON_BASE_NOTIFY_CHAR_UUID: Final = "0000ffe4-0000-1000-8000-00805f9b34fb"
+
+# Solace specific UUIDs
+SOLACE_SERVICE_UUID: Final = "0000ffe0-0000-1000-8000-00805f9b34fb"
+SOLACE_CHAR_UUID: Final = "0000ffe1-0000-1000-8000-00805f9b34fb"
+
+# MotoSleep specific UUIDs (same as Solace but different protocol)
+MOTOSLEEP_SERVICE_UUID: Final = "0000ffe0-0000-1000-8000-00805f9b34fb"
+MOTOSLEEP_CHAR_UUID: Final = "0000ffe1-0000-1000-8000-00805f9b34fb"
+
+# Leggett & Platt specific UUIDs
+# Gen2 variant (Richmat-based, ASCII commands)
+LEGGETT_GEN2_SERVICE_UUID: Final = "45e25100-3171-4cfc-ae89-1d83cf8d8071"
+LEGGETT_GEN2_WRITE_CHAR_UUID: Final = "45e25101-3171-4cfc-ae89-1d83cf8d8071"
+LEGGETT_GEN2_READ_CHAR_UUID: Final = "45e25103-3171-4cfc-ae89-1d83cf8d8071"
+
+# Okin variant (requires pairing)
+LEGGETT_OKIN_SERVICE_UUID: Final = "62741523-52f9-8864-b1ab-3b3a8d65950b"
+LEGGETT_OKIN_CHAR_UUID: Final = "62741525-52f9-8864-b1ab-3b3a8d65950b"
+
+# Reverie specific UUIDs
+REVERIE_SERVICE_UUID: Final = "1b1d9641-b942-4da8-89cc-98e6a58fbd93"
+REVERIE_CHAR_UUID: Final = "6af87926-dc79-412e-a3e0-5f85c2d55de2"
+
+# Okimat specific UUIDs (same as Leggett Okin - requires pairing)
+OKIMAT_SERVICE_UUID: Final = "62741523-52f9-8864-b1ab-3b3a8d65950b"
+OKIMAT_WRITE_CHAR_UUID: Final = "62741525-52f9-8864-b1ab-3b3a8d65950b"
+OKIMAT_NOTIFY_CHAR_UUID: Final = "62741625-52f9-8864-b1ab-3b3a8d65950b"
 
 # Default values
 DEFAULT_MOTOR_COUNT: Final = 2
