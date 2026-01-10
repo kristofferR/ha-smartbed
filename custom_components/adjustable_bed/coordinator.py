@@ -16,7 +16,7 @@ from homeassistant.const import CONF_ADDRESS, CONF_NAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 
-from habluetooth import ConnectParams
+from habluetooth.const import ConnectParams
 
 from .const import (
     ADAPTER_AUTO,
@@ -50,6 +50,7 @@ from .const import (
     DEFAULT_PROTOCOL_VARIANT,
     DOMAIN,
     KEESON_VARIANT_BASE,
+    KEESON_VARIANT_ERGOMOTION,
     KEESON_VARIANT_KSBT,
     LEGGETT_VARIANT_GEN2,
     LEGGETT_VARIANT_OKIN,
@@ -749,6 +750,9 @@ class AdjustableBedCoordinator:
             if self._protocol_variant == KEESON_VARIANT_KSBT:
                 _LOGGER.debug("Using KSBT Keeson variant (configured)")
                 return KeesonController(self, variant="ksbt")
+            elif self._protocol_variant == KEESON_VARIANT_ERGOMOTION:
+                _LOGGER.debug("Using Ergomotion Keeson variant (with position feedback)")
+                return KeesonController(self, variant="ergomotion")
             else:
                 # Auto or base variant
                 _LOGGER.debug("Using Base Keeson variant")
@@ -787,9 +791,10 @@ class AdjustableBedCoordinator:
             return OkimatController(self)
 
         if self._bed_type == BED_TYPE_ERGOMOTION:
-            from .beds.ergomotion import ErgomotionController
+            # Ergomotion uses the same protocol as Keeson with position feedback
+            from .beds.keeson import KeesonController
 
-            return ErgomotionController(self)
+            return KeesonController(self, variant="ergomotion")
 
         if self._bed_type == BED_TYPE_JIECANG:
             from .beds.jiecang import JiecangController

@@ -166,10 +166,12 @@ VARIANT_AUTO: Final = "auto"
 # Keeson variants
 KEESON_VARIANT_BASE: Final = "base"
 KEESON_VARIANT_KSBT: Final = "ksbt"
+KEESON_VARIANT_ERGOMOTION: Final = "ergomotion"
 KEESON_VARIANTS: Final = {
     VARIANT_AUTO: "Auto-detect",
     KEESON_VARIANT_BASE: "BaseI4/BaseI5 (Member's Mark, Purple)",
     KEESON_VARIANT_KSBT: "KSBT (older Keeson remotes)",
+    KEESON_VARIANT_ERGOMOTION: "Ergomotion (with position feedback)",
 }
 
 # Leggett & Platt variants
@@ -199,6 +201,7 @@ ALL_PROTOCOL_VARIANTS: Final = [
     VARIANT_AUTO,
     KEESON_VARIANT_BASE,
     KEESON_VARIANT_KSBT,
+    KEESON_VARIANT_ERGOMOTION,
     LEGGETT_VARIANT_GEN2,
     LEGGETT_VARIANT_OKIN,
     RICHMAT_VARIANT_NORDIC,

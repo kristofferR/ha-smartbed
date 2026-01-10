@@ -29,6 +29,9 @@ This document provides detailed information about each supported bed brand, incl
 - Linak DPG1M (OEM controller used in many beds)
 - IKEA PRAKTVÄDD / VARDÖ
 - BedreNætter adjustable beds
+- Jensen
+- Auping
+- Carpe Diem
 - Many OEM adjustable beds with Linak motors
 
 ### Features
@@ -113,8 +116,11 @@ Position data available via notify characteristics:
 
 ### Known Models
 - Richmat HJA5 series
+- Saatva
+- Lucid L300
+- Classic Brands
+- Rize / Mantua (some models)
 - Some Sven & Son beds
-- Some Lucid beds
 
 ### Features
 | Feature | Supported |
@@ -176,16 +182,21 @@ Position data available via notify characteristics:
 **Status:** ⚠️ Untested
 
 ### Known Models
-- Member's Mark (Sam's Club) adjustable beds
 - Purple adjustable bases
-- ErgoMotion beds
+- GhostBed
+- Member's Mark (Sam's Club) adjustable beds
+- Ergomotion beds
+- Tempur-Pedic (some newer models)
+- Sealy Ease
+- Serta (some models)
+- Beautyrest (some models)
 - Some Costco beds
 
 ### Features
 | Feature | Supported |
 |---------|-----------|
 | Motor Control | ✅ |
-| Position Feedback | ❌ |
+| Position Feedback | ✅ (Ergomotion variant only) |
 | Memory Presets | ✅ (4 slots) |
 | Massage | ✅ |
 | Safety Lights | ✅ |
@@ -205,6 +216,25 @@ Position data available via notify characteristics:
 #### KSBT Variant (Older Remotes)
 **Service UUID:** `6e400001-b5a3-f393-e0a9-e50e24dcca9e`
 **Format:** 6 bytes `[0x04, 0x02, ...int_bytes]` (big-endian)
+
+#### Ergomotion Variant (with Position Feedback)
+Same protocol as Base variant but with real-time position updates via BLE notifications.
+
+**Notify Characteristic:** `0000ffe4-0000-1000-8000-00805f9b34fb`
+
+Position data formats (by header byte):
+| Header | Length | Description |
+|--------|--------|-------------|
+| `0xED` | 16 bytes | Basic position data |
+| `0xF0` | 19 bytes | Extended position data |
+| `0xF1` | 20 bytes | Full status data |
+
+Position data includes:
+- Head position (16-bit, 0-100 scale)
+- Foot position (16-bit, 0-100 scale)
+- Movement status flags
+- Massage levels (0-6)
+- LED status
 
 #### Commands (32-bit Values)
 
@@ -233,65 +263,6 @@ Position data available via notify characteristics:
 | Massage Foot Down | `0x01000000` | Decrease foot massage |
 | Flat | `0x08000000` | Flat preset |
 | Massage Wave | `0x10000000` | Cycle wave massage |
-
----
-
-## Ergomotion
-
-**Status:** ⚠️ Untested
-
-### Known Models
-- Ergomotion adjustable bases
-- Some OEM beds using Ergomotion controllers
-
-### Features
-| Feature | Supported |
-|---------|-----------|
-| Motor Control | ✅ |
-| Position Feedback | ✅ |
-| Memory Presets | ✅ (4 slots) |
-| Massage | ✅ (0-6 levels) |
-| Under-bed Lights | ✅ |
-| Zero-G / Lounge / TV | ✅ |
-
-### Protocol Details
-
-Ergomotion uses the same protocol as Keeson BaseI4/BaseI5, but with additional position feedback via BLE notifications.
-
-**Service UUID:** `0000ffe5-0000-1000-8000-00805f9b34fb`
-**Write Characteristic:** `0000ffe9-0000-1000-8000-00805f9b34fb`
-**Notify Characteristic:** `0000ffe4-0000-1000-8000-00805f9b34fb`
-**Format:** 8 bytes `[0xE5, 0xFE, 0x16, b0, b1, b2, b3, checksum]`
-**Checksum:** `(~sum(bytes)) & 0xFF`
-
-Uses the same 32-bit command values as Keeson - see [Keeson commands](#commands-32-bit-values).
-
-#### Position Feedback
-
-Ergomotion beds provide real-time position updates via BLE notifications:
-
-| Header | Length | Description |
-|--------|--------|-------------|
-| `0xED` | 16 bytes | Basic position data |
-| `0xF0` | 19 bytes | Extended position data |
-| `0xF1` | 20 bytes | Full status data |
-
-Position data includes:
-- Head position (16-bit, 0-100 scale)
-- Foot position (16-bit, 0-100 scale)
-- Movement status flags
-- Massage levels (0-6)
-- LED status
-- Timer status
-
-#### Scene Presets
-
-| Scene | Command Value |
-|-------|---------------|
-| Flat | `0x08000000` |
-| Zero-G | `0x00001000` |
-| Lounge | `0x00002000` |
-| TV | `0x00004000` |
 
 ---
 
@@ -568,6 +539,7 @@ Uses same 32-bit command values as Keeson - see [Keeson commands](#commands-32-b
 
 ### Known Models
 - Okimat beds
+- Lucid L600
 - European adjustable beds with Okin motors
 - Beds with Okin RF remotes
 
